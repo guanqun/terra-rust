@@ -50,7 +50,7 @@ impl AuthCommand {
                 } else {
                     address
                 };
-                let sw = terra.auth().account(&account_id).await?;
+                let sw = terra.auth().account(&account_id, None).await?;
 
                 println!("{}", serde_json::to_string_pretty(&sw)?);
             }
@@ -61,7 +61,10 @@ impl AuthCommand {
                 } else {
                     address
                 };
-                let v = terra.auth().validator_delegations(&account_id).await?;
+                let v = terra
+                    .auth()
+                    .validator_delegations(&account_id, None)
+                    .await?;
                 println!("{:#?}", v.result);
             }
             AuthEnum::Unbonding { address } => {
@@ -73,7 +76,7 @@ impl AuthCommand {
                 };
                 let v = terra
                     .auth()
-                    .validator_unbonding_delegations(&account_id)
+                    .validator_unbonding_delegations(&account_id, None)
                     .await?;
                 println!("{:#?}", v.result);
             }
@@ -84,7 +87,7 @@ impl AuthCommand {
                 } else {
                     address
                 };
-                let v = terra.auth().delegated_validators(&account_id).await?;
+                let v = terra.auth().delegated_validators(&account_id, None).await?;
                 println!("{:#?}", v.result);
             }
         };

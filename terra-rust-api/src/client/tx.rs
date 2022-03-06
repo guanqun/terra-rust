@@ -82,7 +82,7 @@ impl<'a> TX<'a> {
     pub async fn get(&self, hash: &str) -> Result<TXResultBlock, TerraRustAPIError> {
         let resp = self
             .terra
-            .send_cmd::<TXResultBlock>(&format!("/txs/{}", hash), None)
+            .send_cmd::<TXResultBlock>(&format!("/txs/{}", hash), None, None)
             .await?;
         Ok(resp)
     }
@@ -90,7 +90,7 @@ impl<'a> TX<'a> {
     pub async fn get_v1(&self, hash: &str) -> Result<V1TXResult, TerraRustAPIError> {
         let resp = self
             .terra
-            .send_cmd::<V1TXResult>(&format!("/cosmos/tx/v1beta1/txs/{}", hash), None)
+            .send_cmd::<V1TXResult>(&format!("/cosmos/tx/v1beta1/txs/{}", hash), None, None)
             .await?;
         Ok(resp)
     }
@@ -255,6 +255,7 @@ impl<'a> TX<'a> {
                     offset.unwrap_or_default()
                 ),
                 None,
+                None
             )
             .await?;
         Ok(resp)

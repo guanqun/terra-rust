@@ -299,7 +299,7 @@ async fn run(args: Vec<String>) -> Result<()> {
             let query_json = cli_helpers::get_json_block(query_str)?.to_string();
             let result = terra
                 .wasm()
-                .query::<serde_json::Value>(contract, &query_json)
+                .query::<serde_json::Value>(contract, &query_json, None)
                 .await?;
 
             println!("{}", serde_json::to_string_pretty(&result)?)

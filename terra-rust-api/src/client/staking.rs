@@ -14,14 +14,14 @@ impl Staking<'_> {
         //   let url = self.terra.url.to_owned() + "/staking/validators/" + key;
         Ok(self
             .terra
-            .send_cmd::<LCDResult<Validator>>("/staking/validators/", Some(key))
+            .send_cmd::<LCDResult<Validator>>("/staking/validators/", Some(key), None)
             .await?)
     }
     /// Get list of validators
     pub async fn validators(&self) -> Result<LCDResult<Vec<Validator>>, TerraRustAPIError> {
         Ok(self
             .terra
-            .send_cmd::<LCDResult<Vec<Validator>>>("/staking/validators", None)
+            .send_cmd::<LCDResult<Vec<Validator>>>("/staking/validators", None, None)
             .await?)
     }
     /// Get list of validators at a given height
@@ -39,6 +39,7 @@ impl Staking<'_> {
                     limit.unwrap_or(200u64)
                 ),
                 None,
+                None,
             )
             .await?)
     }
@@ -48,7 +49,7 @@ impl Staking<'_> {
     ) -> Result<Option<Validator>, TerraRustAPIError> {
         let lst = self
             .terra
-            .send_cmd::<LCDResult<Vec<Validator>>>("/staking/validators", None)
+            .send_cmd::<LCDResult<Vec<Validator>>>("/staking/validators", None, None)
             .await?
             .result;
         match lst.iter().find(|&p| p.description.moniker == moniker) {
@@ -64,6 +65,7 @@ impl Staking<'_> {
         self.terra
             .send_cmd::<LCDResult<Vec<ValidatorDelegation>>>(
                 &format!("/staking/validators/{}/delegations", key),
+                None,
                 None,
             )
             .await
@@ -81,6 +83,7 @@ impl Staking<'_> {
                     key, limit
                 ),
                 None,
+                None,
             )
             .await
     }
@@ -93,6 +96,7 @@ impl Staking<'_> {
         self.terra
             .send_cmd::<LCDResult<Vec<ValidatorUnbondingDelegation>>>(
                 &format!("/staking/validators/{}/unbonding_delegations", key),
+                None,
                 None,
             )
             .await

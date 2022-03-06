@@ -13,11 +13,13 @@ impl Auth<'_> {
     pub async fn account(
         &self,
         account_address: &str,
+        height: Option<u64>,
     ) -> Result<LCDResult<LCDTypeValue<AuthAccount>>, TerraRustAPIError> {
         self.terra
             .send_cmd::<LCDResult<LCDTypeValue<AuthAccount>>>(
                 &format!("/auth/accounts/{}", account_address),
                 None,
+                height,
             )
             .await
     }
@@ -25,11 +27,13 @@ impl Auth<'_> {
     pub async fn validator_delegations(
         &self,
         account_address: &str,
+        height: Option<u64>,
     ) -> Result<LCDResultVec<ValidatorDelegation>, TerraRustAPIError> {
         self.terra
             .send_cmd::<LCDResultVec<ValidatorDelegation>>(
                 &format!("/staking/delegators/{}/delegations", account_address),
                 None,
+                height,
             )
             .await
     }
@@ -37,14 +41,16 @@ impl Auth<'_> {
     pub async fn validator_unbonding_delegations(
         &self,
         account_address: &str,
+        height: Option<u64>,
     ) -> Result<LCDResult<ValidatorUnbondingDelegation>, TerraRustAPIError> {
         self.terra
             .send_cmd::<LCDResult<ValidatorUnbondingDelegation>>(
                 &format!(
                     "/staking/delegators/{}/unbonding_delegations",
-                    account_address
+                    account_address,
                 ),
                 None,
+                height,
             )
             .await
     }
@@ -52,11 +58,13 @@ impl Auth<'_> {
     pub async fn delegated_validators(
         &self,
         account_address: &str,
+        height: Option<u64>,
     ) -> Result<LCDResult<Vec<Validator>>, TerraRustAPIError> {
         self.terra
             .send_cmd::<LCDResult<Vec<Validator>>>(
                 &format!("/staking/delegators/{}/validators", account_address),
                 None,
+                height,
             )
             .await
     }

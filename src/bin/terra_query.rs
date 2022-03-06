@@ -29,7 +29,7 @@ async fn run() -> anyhow::Result<()> {
 
     let qry = terra
         .wasm()
-        .query::<serde_json::Value>(contract, &json.to_string())
+        .query::<serde_json::Value>(contract, &json.to_string(), None)
         .await?;
     println!("{}", qry);
 

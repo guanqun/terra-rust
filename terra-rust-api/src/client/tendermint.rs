@@ -13,7 +13,7 @@ impl Tendermint<'_> {
     pub async fn blocks(&self) -> anyhow::Result<BlockResult> {
         let response = self
             .terra
-            .send_cmd::<BlockResult>("/blocks/latest", None)
+            .send_cmd::<BlockResult>("/blocks/latest", None, None)
             .await?;
         Ok(response)
     }
@@ -21,7 +21,7 @@ impl Tendermint<'_> {
     pub async fn blocks_at_height(&self, height: u64) -> anyhow::Result<BlockResult> {
         let response = self
             .terra
-            .send_cmd::<BlockResult>(&format!("/blocks/{}", height), None)
+            .send_cmd::<BlockResult>(&format!("/blocks/{}", height), None, None)
             .await?;
         Ok(response)
     }
@@ -40,7 +40,7 @@ impl Tendermint<'_> {
         };
         let response = self
             .terra
-            .send_cmd::<LCDResult<ValidatorSetResult>>("/validatorsets/latest", Some(&args))
+            .send_cmd::<LCDResult<ValidatorSetResult>>("/validatorsets/latest", Some(&args), None)
             .await?;
         Ok(response)
     }
@@ -114,6 +114,7 @@ impl Tendermint<'_> {
             .send_cmd::<LCDResult<ValidatorSetResult>>(
                 &format!("/validatorsets/{}", height),
                 Some(&args),
+                None,
             )
             .await?;
         Ok(response)

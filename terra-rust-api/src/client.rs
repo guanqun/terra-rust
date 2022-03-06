@@ -234,8 +234,9 @@ impl Terra {
         &self,
         path: &str,
         args: Option<&str>,
+        height: Option<u64>,
     ) -> Result<T, TerraRustAPIError> {
-        self.send_cmd_url(&self.url, path, args).await
+        self.send_cmd_url(&self.url, path, args, height).await
     }
 
     /// used to send a GET command to any URL
@@ -244,11 +245,19 @@ impl Terra {
         url: &str,
         path: &str,
         args: Option<&str>,
+        height: Option<u64>,
     ) -> Result<T, TerraRustAPIError> {
-        let request_url = match args {
+        let mut request_url = match args {
             Some(a) => format!("{}{}{}", url.to_owned(), path, a),
             None => format!("{}{}", url.to_owned(), path),
         };
+        if let Some(height) = height {
+            // this is a bit hacky, we probably should use .query(&[("a", "b"), ("c", "d")])
+            // but then it would have larger changes.
+            let concat_char = if args.is_some() { "&" } else { "?" };
+            let height_query = format!("{}height={}", concat_char, height);
+            request_url.push_str(height_query.as_str());
+        }
 
         if self.debug {
             log::debug!("URL={}", &request_url);
@@ -433,7 +442,7 @@ impl Terra {
     ) -> Result<(StdSignMsg, Vec<StdSignature>), TerraRustAPIError> {
         let from_public = from.public_key(secp);
         let from_account = from_public.account()?;
-        let auth = self.auth().account(&from_account).await?;
+        let auth = self.auth().account(&from_account, None).await?;
         let fees = self.calc_fees(&auth.result.value, &messages).await?;
         Terra::generate_transaction_to_broadcast_fees(
             &self.chain_id,

@@ -15,12 +15,18 @@ impl Market<'_> {
         Market { terra }
     }
     /// obtain how much a coin is worth in a secondary coin
-    pub async fn swap(&self, offer: &Coin, ask_denom: &str) -> anyhow::Result<LCDResult<Coin>> {
+    pub async fn swap(
+        &self,
+        offer: &Coin,
+        ask_denom: &str,
+        height: Option<u64>,
+    ) -> anyhow::Result<LCDResult<Coin>> {
         let response = self
             .terra
             .send_cmd::<LCDResult<Coin>>(
                 "/market/swap",
                 Some(&format!("?offer_coin={}&ask_denom={}", offer, ask_denom)),
+                height,
             )
             .await?;
         Ok(response)
@@ -31,8 +37,9 @@ impl Market<'_> {
         from: String,
         to_coin: String,
         threshold: Decimal,
+        height: Option<u64>,
     ) -> anyhow::Result<Vec<Message>> {
-        let account_balances = self.terra.bank().balances(&from).await?;
+        let account_balances = self.terra.bank().balances(&from, height).await?;
         let potential_coins = account_balances
             .result
             .into_iter()
@@ -44,7 +51,7 @@ impl Market<'_> {
                 let resp = self
                     .terra
                     .market()
-                    .swap(&c.clone(), &to_coin)
+                    .swap(&c.clone(), &to_coin, height)
                     .await
                     .map(|f| (c, f.result));
                 resp

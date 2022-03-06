@@ -48,17 +48,17 @@ impl ContractCommand {
     pub async fn parse(self, terra: &Terra) -> Result<()> {
         match self.command {
             ContractEnum::Codes { code_id } => {
-                let code_result = terra.wasm().codes(code_id).await?;
+                let code_result = terra.wasm().codes(code_id, None).await?;
                 println!("{}", serde_json::to_string_pretty(&code_result)?);
                 Ok(())
             }
             ContractEnum::Info { contract_address } => {
-                let code_result = terra.wasm().info(&contract_address).await?;
+                let code_result = terra.wasm().info(&contract_address, None).await?;
                 println!("{}", serde_json::to_string_pretty(&code_result)?);
                 Ok(())
             }
             ContractEnum::Parameters => {
-                let code_result = terra.wasm().parameters().await?;
+                let code_result = terra.wasm().parameters(None).await?;
                 println!("{}", serde_json::to_string_pretty(&code_result)?);
                 Ok(())
             }
@@ -68,7 +68,7 @@ impl ContractCommand {
             } => {
                 let code_result = terra
                     .wasm()
-                    .query::<Value>(&contract_address, &query)
+                    .query::<Value>(&contract_address, &query, None)
                     .await?;
                 println!("{}", serde_json::to_string_pretty(&code_result)?);
                 Ok(())
@@ -80,7 +80,7 @@ impl ContractCommand {
             } => {
                 let (key, value) = terra
                     .wasm()
-                    .query_raw(&contract_address, &key, &subkey)
+                    .query_raw(&contract_address, &key, &subkey, None)
                     .await?;
                 println!("{} {}", key, value);
                 Ok(())

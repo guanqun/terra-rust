@@ -19,30 +19,39 @@ impl Wasm<'_> {
     pub fn create(terra: &'_ Terra) -> Wasm<'_> {
         Wasm { terra }
     }
-    pub async fn codes(&self, code_id: u64) -> Result<WasmCodeResult, TerraRustAPIError> {
+    pub async fn codes(
+        &self,
+        code_id: u64,
+        height: Option<u64>,
+    ) -> Result<WasmCodeResult, TerraRustAPIError> {
         let code = self
             .terra
-            .send_cmd::<WasmCodeResult>(&format!("/wasm/codes/{}", code_id), None)
+            .send_cmd::<WasmCodeResult>(&format!("/wasm/codes/{}", code_id), None, height)
             .await?;
         Ok(code)
     }
     pub async fn info(
         &self,
         contract_address: &str,
+        height: Option<u64>,
     ) -> Result<WasmContractInfoResult, TerraRustAPIError> {
         let code = self
             .terra
             .send_cmd::<WasmContractInfoResult>(
                 &format!("/wasm/contracts/{}", contract_address),
                 None,
+                height,
             )
             .await?;
         Ok(code)
     }
-    pub async fn parameters(&self) -> Result<WasmParameterResult, TerraRustAPIError> {
+    pub async fn parameters(
+        &self,
+        height: Option<u64>,
+    ) -> Result<WasmParameterResult, TerraRustAPIError> {
         let code = self
             .terra
-            .send_cmd::<WasmParameterResult>("/wasm/parameters", None)
+            .send_cmd::<WasmParameterResult>("/wasm/parameters", None, height)
             .await?;
         Ok(code)
     }
@@ -50,12 +59,14 @@ impl Wasm<'_> {
         &self,
         contract_address: &str,
         json_query: &str,
+        height: Option<u64>,
     ) -> Result<T, TerraRustAPIError> {
         let code = self
             .terra
             .send_cmd::<T>(
                 &format!("/wasm/contracts/{}/store?", contract_address),
                 Some(&format!("query_msg={}", json_query)),
+                height,
             )
             .await?;
         Ok(code)
@@ -65,6 +76,7 @@ impl Wasm<'_> {
         contract_address: &str,
         key: &str,
         sub_key: &Option<String>,
+        height: Option<u64>,
     ) -> Result<(String, String), TerraRustAPIError> {
         let json_query = match sub_key {
             Some(sub_key_str) => format!("key={}&subkey={}", key, &sub_key_str),
@@ -76,6 +88,7 @@ impl Wasm<'_> {
             .send_cmd::<WasmQueryRawResult>(
                 &format!("/wasm/contracts/{}/store/raw?", contract_address),
                 Some(&json_query),
+                height,
             )
             .await?;
         let key_vec = subtle_encoding::base64::decode(code.result.key.as_bytes())?;

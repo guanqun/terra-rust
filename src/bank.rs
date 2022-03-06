@@ -71,7 +71,7 @@ impl BankCommand {
                 } else {
                     account.clone()
                 };
-                let sw = terra.bank().balances(&account_id).await?;
+                let sw = terra.bank().balances(&account_id, None).await?;
                 println!("{}", serde_json::to_string_pretty(&sw)?);
             }
         };

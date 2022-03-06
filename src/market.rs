@@ -67,7 +67,7 @@ impl MarketCommand {
         match self.command {
             MarketEnum::SwapRate { denom, ask, amount } => {
                 let coin = Coin::create(&denom, amount);
-                let sw = terra.market().swap(&coin, &ask).await?;
+                let sw = terra.market().swap(&coin, &ask, None).await?;
 
                 println!("{}", serde_json::to_string_pretty(&sw)?);
             }
@@ -122,7 +122,7 @@ impl MarketCommand {
                 let from_account = from_public_key.account()?;
                 let messages = terra
                     .market()
-                    .generate_sweep_messages(from_account, to_coin, threshold)
+                    .generate_sweep_messages(from_account, to_coin, threshold, None)
                     .await?;
 
                 if messages.is_empty() {

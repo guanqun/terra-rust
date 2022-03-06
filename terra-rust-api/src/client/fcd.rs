@@ -14,7 +14,12 @@ impl FCD<'_> {
     pub async fn gas_prices(&self) -> Result<HashMap<String, Decimal>, TerraRustAPIError> {
         Ok(self
             .terra
-            .send_cmd_url::<HashMap<String, Decimal>>(self.fcd_url, "/v1/txs/gas_prices", None)
+            .send_cmd_url::<HashMap<String, Decimal>>(
+                self.fcd_url,
+                "/v1/txs/gas_prices",
+                None,
+                None,
+            )
             .await?)
     }
     pub async fn fetch_gas_prices(

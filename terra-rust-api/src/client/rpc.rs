@@ -15,28 +15,33 @@ impl RPC<'_> {
     pub async fn status(&self) -> anyhow::Result<RPCStatus> {
         Ok(self
             .terra
-            .send_cmd_url::<RPCResult<RPCStatus>>(self.rpc_url, "/status", None)
+            .send_cmd_url::<RPCResult<RPCStatus>>(self.rpc_url, "/status", None, None)
             .await?
             .result)
     }
     pub async fn net_info(&self) -> anyhow::Result<RPCNetInfo> {
         Ok(self
             .terra
-            .send_cmd_url::<RPCResult<RPCNetInfo>>(self.rpc_url, "/net_info", None)
+            .send_cmd_url::<RPCResult<RPCNetInfo>>(self.rpc_url, "/net_info", None, None)
             .await?
             .result)
     }
     pub async fn unconfirmed_txs(&self) -> anyhow::Result<RPCUnconfirmedTXS> {
         Ok(self
             .terra
-            .send_cmd_url::<RPCResult<RPCUnconfirmedTXS>>(self.rpc_url, "/unconfirmed_txs", None)
+            .send_cmd_url::<RPCResult<RPCUnconfirmedTXS>>(
+                self.rpc_url,
+                "/unconfirmed_txs",
+                None,
+                None,
+            )
             .await?
             .result)
     }
     pub async fn block(&self) -> anyhow::Result<BlockResult> {
         Ok(self
             .terra
-            .send_cmd_url::<RPCResult<BlockResult>>(self.rpc_url, "/block", None)
+            .send_cmd_url::<RPCResult<BlockResult>>(self.rpc_url, "/block", None, None)
             .await?
             .result)
     }
@@ -47,6 +52,8 @@ impl RPC<'_> {
                 self.rpc_url,
                 &format!("/block?height={}", height),
                 None,
+                // the height param is already set, so let's ignore it here
+                None,
             )
             .await?
             .result)
@@ -54,7 +61,12 @@ impl RPC<'_> {
     pub async fn block_results(&self) -> anyhow::Result<BlockResultsResult> {
         Ok(self
             .terra
-            .send_cmd_url::<RPCResult<BlockResultsResult>>(self.rpc_url, "/block_results", None)
+            .send_cmd_url::<RPCResult<BlockResultsResult>>(
+                self.rpc_url,
+                "/block_results",
+                None,
+                None,
+            )
             .await?
             .result)
     }
@@ -64,6 +76,7 @@ impl RPC<'_> {
             .send_cmd_url::<RPCResult<BlockResultsResult>>(
                 self.rpc_url,
                 &format!("/block_results?height={}", height),
+                None,
                 None,
             )
             .await?

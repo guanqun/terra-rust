@@ -24,7 +24,7 @@ impl WasmCommand {
     pub async fn parse(self, terra: &Terra) -> Result<()> {
         match self.command {
             WasmEnum::Query { contract, json } => {
-                let resp = terra.wasm().query::<Value>(&contract, &json).await?;
+                let resp = terra.wasm().query::<Value>(&contract, &json, None).await?;
                 println!("{}", serde_json::to_string_pretty(&resp)?);
             }
         };

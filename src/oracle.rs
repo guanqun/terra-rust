@@ -53,7 +53,7 @@ impl OracleCommand {
     pub async fn parse(self, terra: &Terra, wallet: &Wallet<'_>, seed: Option<&str>) -> Result<()> {
         match self.command {
             OracleEnum::Parameters => {
-                let resp = terra.oracle().parameters().await?;
+                let resp = terra.oracle().parameters(None).await?;
 
                 println!("{}", serde_json::to_string(&resp)?)
             }
@@ -101,19 +101,19 @@ pub async fn voter_cmd_parse<'a>(
 ) -> Result<()> {
     match cmd {
         VotersCommand::Votes => {
-            let x = voters.votes().await?;
+            let x = voters.votes(None).await?;
             println!("{:#?}", x)
         }
         VotersCommand::PreVotes => {
-            let x = voters.prevotes().await?;
+            let x = voters.prevotes(None).await?;
             println!("{:#?}", x)
         }
         VotersCommand::Feeder => {
-            let x = voters.feeder().await?;
+            let x = voters.feeder(None).await?;
             println!("{:#?}", x)
         }
         VotersCommand::Miss => {
-            let x = voters.miss().await?;
+            let x = voters.miss(None).await?;
             println!("{:#?}", x)
         }
         VotersCommand::AggregatePreVote => {
