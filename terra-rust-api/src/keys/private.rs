@@ -91,6 +91,13 @@ impl PrivateKey {
         PublicKey::from_bitcoin_public_key(x)
     }
 
+    pub fn to_bytes<C: secp256k1::Signing + secp256k1::Context>(
+        &self,
+        secp: &Secp256k1<C>,
+    ) -> Vec<u8> {
+        self.private_key.private_key.public_key(secp).to_bytes()
+    }
+
     fn gen_private_key_phrase<C: secp256k1::Signing + secp256k1::Context>(
         secp: &Secp256k1<C>,
         phrase: Phrase,
