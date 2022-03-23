@@ -154,8 +154,7 @@ impl PrivateKey {
         &self,
         secp: &Secp256k1<C>,
         blob: &[u8],
-    ) -> Result<StdSignature, TerraRustAPIError> {
-        let pub_k = &self.private_key.private_key.public_key(secp);
+    ) -> Result<Vec<u8>, TerraRustAPIError> {
         let priv_k = self.private_key.private_key.key;
         let mut sha = Sha256::new();
         let mut sha_result: [u8; 32] = [0; 32];
@@ -165,9 +164,9 @@ impl PrivateKey {
         let message: Message = Message::from_slice(&sha_result)?;
         let signature = secp.sign(&message, &priv_k);
 
-        //eprintln!("SIG:{}", hex::encode(&signature.serialize_compact()));
-        let sig: StdSignature = StdSignature::create(&signature.serialize_compact(), pub_k);
-        Ok(sig)
+        // the return value of serialize_compact is just 64 bytes
+        // we're returning it as a Vec instead.
+        Ok(signature.serialize_compact().to_vec())
     }
 
     /// used for testing
@@ -253,10 +252,6 @@ mod tst {
             "AiMzHaA2bvnDXfHzkjMM+vkSE/p0ymBtAFKUnUtQAeXe"
         );
         assert_eq!(sig.signature, "FJKAXRxNB5ruqukhVqZf3S/muZEUmZD10fVmWycdVIxVWiCXXFsUy2VY2jINEOUGNwfrqEZsT2dUfAvWj8obLg==");
-
-        // try the sign_bytes() interface
-        let sig2 = pk.sign_bytes(&secp, to_sign.as_bytes())?;
-        assert_eq!(sig.signature, sig2.signature);
 
         Ok(())
     }
