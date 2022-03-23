@@ -127,6 +127,7 @@ impl PrivateKey {
     pub fn words(&self) -> Option<&str> {
         self.mnemonic.as_ref().map(|phrase| phrase.phrase())
     }
+
     /// signs a blob of data and returns a [StdSignature]
     pub fn sign<C: secp256k1::Signing + secp256k1::Context>(
         &self,
@@ -147,6 +148,28 @@ impl PrivateKey {
         let sig: StdSignature = StdSignature::create(&signature.serialize_compact(), pub_k);
         Ok(sig)
     }
+
+    /// signs a blob of data and returns a [StdSignature]
+    pub fn sign_bytes<C: secp256k1::Signing + secp256k1::Context>(
+        &self,
+        secp: &Secp256k1<C>,
+        blob: &[u8],
+    ) -> Result<StdSignature, TerraRustAPIError> {
+        let pub_k = &self.private_key.private_key.public_key(secp);
+        let priv_k = self.private_key.private_key.key;
+        let mut sha = Sha256::new();
+        let mut sha_result: [u8; 32] = [0; 32];
+        sha.input(blob);
+        sha.result(&mut sha_result);
+
+        let message: Message = Message::from_slice(&sha_result)?;
+        let signature = secp.sign(&message, &priv_k);
+
+        //eprintln!("SIG:{}", hex::encode(&signature.serialize_compact()));
+        let sig: StdSignature = StdSignature::create(&signature.serialize_compact(), pub_k);
+        Ok(sig)
+    }
+
     /// used for testing
     /// could potentially be used to recreate the private key instead of words
     #[allow(dead_code)]
@@ -213,6 +236,7 @@ mod tst {
 
         Ok(())
     }
+
     #[test]
     pub fn test_sign() -> anyhow::Result<()> {
         // This test is using message from python SDK.. so these keys generate same sigs as they do.
@@ -229,6 +253,10 @@ mod tst {
             "AiMzHaA2bvnDXfHzkjMM+vkSE/p0ymBtAFKUnUtQAeXe"
         );
         assert_eq!(sig.signature, "FJKAXRxNB5ruqukhVqZf3S/muZEUmZD10fVmWycdVIxVWiCXXFsUy2VY2jINEOUGNwfrqEZsT2dUfAvWj8obLg==");
+
+        // try the sign_bytes() interface
+        let sig2 = pk.sign_bytes(&secp, to_sign.as_bytes())?;
+        assert_eq!(sig.signature, sig2.signature);
 
         Ok(())
     }
